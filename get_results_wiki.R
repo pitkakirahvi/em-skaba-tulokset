@@ -71,11 +71,6 @@ group_f <- get_group_matches(
   "https://en.wikipedia.org/wiki/UEFA_Euro_2020_Group_F" 
 )
 
-knockout <- get_group_matches(
-  "Knockout",
-  "https://en.wikipedia.org/wiki/UEFA_Euro_2020_knockout_phase"
-)
-
 group_results <- bind_rows(
   group_a,
   group_b,

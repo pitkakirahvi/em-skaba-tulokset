@@ -25,7 +25,7 @@ matchday <- matches %>%
   left_join(match_details, by = "match") %>%
   filter(date %in% today()) %>%
   select(no, group,!!!colnames(matches))
-
+  
 # Group points
 points_group <- matches %>%
   gather(veikkaaja, veikkaus, 2:ncol(.)) %>%
@@ -39,6 +39,28 @@ group_points_t <- points_group %>%
   left_join(group_results, by = "match") %>%
   relocate(group, match, result) %>%
   arrange(group, match)
+
+# Rounds
+result_round16 <- read_lines("round16.txt")
+result_round8 <- read_lines("round8.txt")
+
+round16_points <- round16 %>%
+  gather(veikkaaja, veikkaus, 1:ncol(.)) %>%
+  mutate(points = if_else(veikkaus %in% result_round16, 1, 0))
+
+round16_points_t <- round16_points %>%
+  spread(veikkaaja, points) %>%
+  filter(veikkaus %in% result_round16) %>%
+  replace(is.na(.), 0)
+
+round8_points <- round8 %>%
+  gather(veikkaaja, veikkaus, 1:ncol(.)) %>%
+  mutate(points = if_else(veikkaus %in% result_round8, 1, 0))
+
+round8_points_t <- round8_points %>%
+  spread(veikkaaja, points) %>%
+  filter(veikkaus %in% result_round8) %>%
+  replace(is.na(.), 0)
 
 # Scorers
 points_scorers <- scorers %>%
@@ -70,13 +92,23 @@ veikkaaja_gp <- points_group %>%
   summarise(points = sum(points)) %>%
   rename(osio = "group")
 
+veikkaaja_rounds <- bind_rows(
+  round16_points %>% mutate(osio = "round16"),
+  round8_points %>% mutate(osio = "round8")
+) %>%
+  group_by(veikkaaja, osio) %>%
+  summarise(points = sum(points, na.rm = TRUE))
+
 veikkaaja_scorers <- points_scorers %>%
   group_by(veikkaaja) %>%
   summarise(points = 0.5 * sum(goals, na.rm = TRUE)) %>%
   mutate(osio = "maalintekijät")
 
 veikkaaja_points <- bind_rows(veikkaaja_gp,
+                              veikkaaja_rounds,
                               veikkaaja_scorers)
+
+
 
 # Plot theme ----
 
@@ -137,7 +169,25 @@ plot_top_scorer <- top_scorer %>%
 # Plot results ----
 
 blues <- c("#5FB9D5", "#7AC6DC", "#8ACDE0", "#A2D9E7", "#B3E2EB", "#DDE8E9")
-reds <- c("#ff4c4c", "#ff7f7f")
+reds <- c("#ff4c4c") #, "#ff7f7f")
+greens <- c("#a4fba6", "#4ae54a") #, "#30cb00", "#0f9200", "#006203")
+
+veikkaaja_points <- veikkaaja_points %>%
+  mutate(
+    osio = as_factor(osio),
+    osio = fct_relevel(
+      osio,
+      "maalintekijät",
+      "round8",
+      "round16",
+      "Group A",
+      "Group B",
+      "Group C",
+      "Group D",
+      "Group E",
+      "Group F"
+    )
+  )
 
 p_veikkaajat <- veikkaaja_points %>%
   ggplot(aes(
@@ -147,7 +197,7 @@ p_veikkaajat <- veikkaaja_points %>%
     label = points
   )) +
   geom_bar(stat = 'identity') +
-  scale_fill_manual(values = c(blues, reds)) + 
+  scale_fill_manual(values = c(reds, greens, blues)) + 
   geom_text(stat = 'identity', position = position_stack(vjust = .5)) +
   theme_fig +
   labs(x = NULL,
@@ -159,13 +209,28 @@ ui <- navbarPage(
   'EM-skaba 2021',
   id = 'mainNav',
   tabPanel(
-    'Tänään tulessa',
-    value = 'Liekeis',
+    'Pisteet',
+    value = 'Pisteet',
     fluidPage(
       tags$hr(),
-      tags$strong('Pelit ja veikkaukset tänään:'),
+      plotOutput("p_veikkaajat"),
+      tags$hr(),
+      tags$strong('Pisteet alkulohkon peleistä:'),
       fluidRow(column(12,
-                      tableOutput('matchday')))
+                      tableOutput('group_points_t'))),
+      tags$hr(),
+      tags$strong('Pisteet maalintekijöistä:'),
+      fluidRow(column(12,
+                      tableOutput('points_scorers_t'))),
+      tags$hr(),
+      tags$strong('Pisteet neljännesvälierät:'),
+      fluidRow(column(12,
+                      tableOutput('round16_points_t'))),
+      tags$hr(),
+      tags$strong('Pisteet puolivälierät:'),
+      fluidRow(column(12,
+                      tableOutput('round8_points_t'))),
+      
     )
   ),
   tabPanel(
@@ -226,22 +291,6 @@ ui <- navbarPage(
       plotOutput("plot7"),
     )
   ),
-  tabPanel(
-    'Pisteet',
-    value = 'Pisteet',
-    fluidPage(
-      tags$hr(),
-      plotOutput("p_veikkaajat"),
-      tags$hr(),
-      tags$strong('Pisteet alkulohkon peleistä:'),
-      fluidRow(column(12,
-                      tableOutput('group_points_t'))),
-      tags$hr(),
-      tags$strong('Pisteet maalintekijöistä:'),
-      fluidRow(column(12,
-                      tableOutput('points_scorers_t')))
-    )
-  ),
   tags$head(
     tags$style(
       'body{min-height: 600px; height: auto; max-width: 1200px; margin: auto;}
@@ -264,6 +313,8 @@ server <- function(input, output, session) {
   output$top_scorer <- renderTable(top_scorer, align = "c")
   output$matchday <- renderTable(matchday, align = "c")
   output$group_points_t <- renderTable(group_points_t, align = "c")
+  output$round16_points_t <- renderTable(round16_points_t, align = "c")
+  output$round8_points_t <- renderTable(round8_points_t, align = "c")
   output$points_scorers_t <-
     renderTable(points_scorers_t, align = "l")
   output$plot1 <- renderPlot({
