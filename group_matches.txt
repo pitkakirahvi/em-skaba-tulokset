@@ -1,0 +1,37 @@
+no	group	date	home	away
+Match 1	Group A	11 June 2021	Turkey	Italy
+Match 2	Group A	12 June 2021	Wales	Switzerland
+Match 13	Group A	16 June 2021	Turkey	Wales
+Match 14	Group A	16 June 2021	Italy	Switzerland
+Match 25	Group A	20 June 2021	Switzerland	Turkey
+Match 26	Group A	20 June 2021	Italy	Wales
+Match 3	Group B	12 June 2021	Denmark	Finland
+Match 4	Group B	12 June 2021	Belgium	Russia
+Match 15	Group B	16 June 2021	Finland	Russia
+Match 16	Group B	17 June 2021	Denmark	Belgium
+Match 27	Group B	21 June 2021	Russia	Denmark
+Match 28	Group B	21 June 2021	Finland	Belgium
+Match 6	Group C	13 June 2021	Austria	North Macedonia
+Match 5	Group C	13 June 2021	Netherlands	Ukraine
+Match 18	Group C	17 June 2021	Ukraine	North Macedonia
+Match 17	Group C	17 June 2021	Netherlands	Austria
+Match 29	Group C	21 June 2021	North Macedonia	Netherlands
+Match 30	Group C	21 June 2021	Ukraine	Austria
+Match 7	Group D	13 June 2021	England	Croatia
+Match 8	Group D	14 June 2021	Scotland	Czech Republic
+Match 19	Group D	18 June 2021	Croatia	Czech Republic
+Match 20	Group D	18 June 2021	England	Scotland
+Match 31	Group D	22 June 2021	Croatia	Scotland
+Match 32	Group D	22 June 2021	Czech Republic	England
+Match 10	Group E	14 June 2021	Poland	Slovakia
+Match 9	Group E	14 June 2021	Spain	Sweden
+Match 21	Group E	18 June 2021	Sweden	Slovakia
+Match 22	Group E	19 June 2021	Spain	Poland
+Match 33	Group E	23 June 2021	Slovakia	Spain
+Match 34	Group E	23 June 2021	Sweden	Poland
+Match 11	Group F	15 June 2021	Hungary	Portugal
+Match 12	Group F	15 June 2021	France	Germany
+Match 23	Group F	19 June 2021	Hungary	France
+Match 24	Group F	19 June 2021	Portugal	Germany
+Match 35	Group F	23 June 2021	Portugal	France
+Match 36	Group F	23 June 2021	Germany	Hungary
