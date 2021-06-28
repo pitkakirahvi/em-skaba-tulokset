@@ -23,7 +23,8 @@ get_scorers <- function(paths){
              player = str_remove_all(player, "\\n"),
              player = str_remove_all(player, "\\,"),
              player = str_remove_all(player, "\\+"),
-             player = str_trim(player))
+             player = str_trim(player),
+             player = str_replace(player, "F. Torres", "Torres"))
     
     if (first_read) {
       scorers <- e_scorers
