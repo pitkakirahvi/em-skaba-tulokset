@@ -1,0 +1,19 @@
+player	goals
+Cristiano Ronaldo	5
+Harry Kane	1
+Romelu Lukaku	3
+Kylian Mbappé	0
+Ciro Immobile	2
+Robert Lewandowski	3
+Timo Werner	0
+Christian Eriksen	0
+Memphis Depay	2
+Teemu Pukki	0
+Burak Yılmaz	0
+Antoine Griezmann	1
+Thomas Müller	0
+Olivier Giroud	0
+Ferran Torres	2
+Artem Dzyuba	1
+Eden Hazard	0
+Álvaro Morata	2

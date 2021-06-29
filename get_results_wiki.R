@@ -79,4 +79,8 @@ group_results <- bind_rows(
   group_e,
   group_f
 ) 
- rm(group_a, group_b, group_c, group_d, group_e, group_f)
+
+group_results %>%
+  write_delim("group_results.txt", delim = "\t")
+
+rm(group_results, group_a, group_b, group_c, group_d, group_e, group_f)

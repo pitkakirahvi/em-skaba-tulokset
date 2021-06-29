@@ -1,6 +1,8 @@
 library(rvest)
 library(tidyverse)
 
+load(file = "rows.Rdata")
+
 get_scorers <- function(paths){
   first_read <- TRUE
   for (path in paths){
@@ -38,16 +40,30 @@ get_scorers <- function(paths){
     summarise(goals = sum(goals))
 }
 
-results_scorers <- get_scorers(
+group_scorers <- get_scorers(
   c("https://en.wikipedia.org/wiki/UEFA_Euro_2020_Group_A",
     "https://en.wikipedia.org/wiki/UEFA_Euro_2020_Group_B",
     "https://en.wikipedia.org/wiki/UEFA_Euro_2020_Group_C",
     "https://en.wikipedia.org/wiki/UEFA_Euro_2020_Group_D",
     "https://en.wikipedia.org/wiki/UEFA_Euro_2020_Group_E", 
-    "https://en.wikipedia.org/wiki/UEFA_Euro_2020_Group_F",
-    "https://en.wikipedia.org/wiki/UEFA_Euro_2020_knockout_phase"
+    "https://en.wikipedia.org/wiki/UEFA_Euro_2020_Group_F"
     )
 )
 
-results_top_scorer <- results_scorers %>%
-  filter(goals == max(goals))
+scorers_results <- scorers %>%
+  gather(veikkaaja, player) %>%
+  distinct(player) %>%
+  separate(
+    player,
+    sep = " ",
+    into = c("first", "last"),
+    remove = FALSE
+  ) %>%
+  left_join(group_scorers, by = c("last" = "player")) %>%
+  select(player, goals) %>%
+  replace_na(list(goals = 0))
+  
+scorers_results %>%
+  write_delim("scorers_results.txt", delim = "\t")
+
+rm(scorers_results, group_scorers)

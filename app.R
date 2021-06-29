@@ -5,27 +5,27 @@ library(lubridate)
 
 # Load data ----
 
-source("get_scorers_wiki.R", encoding = "UTF-8")
-source("get_results_wiki.R", encoding = "UTF-8")
-
 load(file = "rows.Rdata")
 
-# Clean data ----
-
-# Matchday
 match_details <- read_delim("group_matches.txt",
                             delim = "\t",
                             locale = locale("fi"))
 
+scorers_results <- read_delim("scorers_results.txt",
+                              delim = "\t",
+                              locale = locale("fi"))
+
+group_results <- read_delim("group_results.txt",
+                            delim = "\t",
+                            locale = locale("fi"))
+
+# Clean data ----
+
+# Matchday
 match_details <- match_details %>%
   mutate(match = paste0(home, "-", away),
          date = dmy(date))
 
-matchday <- matches %>%
-  left_join(match_details, by = "match") %>%
-  filter(date %in% today()) %>%
-  select(no, group,!!!colnames(matches))
-  
 # Group points
 points_group <- matches %>%
   gather(veikkaaja, veikkaus, 2:ncol(.)) %>%
@@ -65,15 +65,9 @@ round8_points_t <- round8_points %>%
 # Scorers
 points_scorers <- scorers %>%
   gather(veikkaaja, player) %>%
-  separate(
-    player,
-    sep = " ",
-    into = c("first", "last"),
-    remove = FALSE
-  ) %>%
-  left_join(results_scorers, by = c("last" = "player")) %>%
+  left_join(scorers_results, by = "player") %>%
   mutate(points = 0.5 * goals) %>%
-  select(veikkaaja, player, goals)
+  select(veikkaaja, player, goals, points)
 
 points_scorers_t <- points_scorers %>%
   group_by(player) %>%
@@ -84,6 +78,16 @@ points_scorers_t <- points_scorers %>%
   ) %>%
   replace_na(list(goals = 0, points = 0)) %>%
   arrange(-goals)
+
+top_scorer_results <- scorers_results %>%
+  filter(goals == max(goals)) %>%
+  mutate(points = 3)
+
+points_top_scorer <- top_scorer %>%
+  gather(veikkaaja, player) %>%
+  left_join(top_scorer_results, by = "player") %>%
+  replace_na(list(goals = 0, points = 0)) %>%
+  select(veikkaaja, player, goals, points)
 
 # Veikkaajat
 veikkaaja_gp <- points_group %>%
@@ -104,11 +108,14 @@ veikkaaja_scorers <- points_scorers %>%
   summarise(points = 0.5 * sum(goals, na.rm = TRUE)) %>%
   mutate(osio = "maalintekijät")
 
+veikkaaja_top_scorer <- points_top_scorer %>%
+  mutate(osio = "maalikuningas") %>%
+  select(veikkaaja, points, osio)
+
 veikkaaja_points <- bind_rows(veikkaaja_gp,
                               veikkaaja_rounds,
-                              veikkaaja_scorers)
-
-
+                              veikkaaja_scorers,
+                              veikkaaja_top_scorer)
 
 # Plot theme ----
 
@@ -126,7 +133,6 @@ theme_fig <- theme_minimal() +
     axis.text = element_text(size = 13),
     plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")
   )
-
 
 # Plot guess ----
 
@@ -169,7 +175,7 @@ plot_top_scorer <- top_scorer %>%
 # Plot results ----
 
 blues <- c("#5FB9D5", "#7AC6DC", "#8ACDE0", "#A2D9E7", "#B3E2EB", "#DDE8E9")
-reds <- c("#ff4c4c") #, "#ff7f7f")
+reds <- c("#ff4c4c", "#ff7f7f")
 greens <- c("#a4fba6", "#4ae54a") #, "#30cb00", "#0f9200", "#006203")
 
 veikkaaja_points <- veikkaaja_points %>%
@@ -177,6 +183,7 @@ veikkaaja_points <- veikkaaja_points %>%
     osio = as_factor(osio),
     osio = fct_relevel(
       osio,
+      "maalikuningas",
       "maalintekijät",
       "round8",
       "round16",
@@ -189,6 +196,10 @@ veikkaaja_points <- veikkaaja_points %>%
     )
   )
 
+veikkaaja_total_points <- veikkaaja_points %>%
+  group_by(veikkaaja) %>%
+  summarise(points = sum(points))
+
 p_veikkaajat <- veikkaaja_points %>%
   ggplot(aes(
     x = reorder(veikkaaja, points),
@@ -197,11 +208,25 @@ p_veikkaajat <- veikkaaja_points %>%
     label = points
   )) +
   geom_bar(stat = 'identity') +
-  scale_fill_manual(values = c(reds, greens, blues)) + 
-  geom_text(stat = 'identity', position = position_stack(vjust = .5)) +
+  scale_fill_manual(values = c(reds, greens, blues)) +
+  #geom_text(stat = 'identity',
+  #          position = position_stack(vjust = .5),
+  #          size = 4) +
   theme_fig +
   labs(x = NULL,
-       title = "Veikkauksen pistetilanne:")
+       title = "Veikkauksen pistetilanne:") +
+  geom_text(
+    data = veikkaaja_total_points,
+    aes(
+      x = reorder(veikkaaja, points),
+      y = points,
+      fill = NULL,
+      label = points
+    ),
+    nudge_y = 5,
+    size = 4.5,
+    fontface = "bold"
+  )
 
 # Shiny ----
 
