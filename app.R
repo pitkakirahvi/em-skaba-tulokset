@@ -43,6 +43,7 @@ group_points_t <- points_group %>%
 # Rounds
 result_round16 <- read_lines("round16.txt")
 result_round8 <- read_lines("round8.txt")
+result_round4 <- read_lines("round4.txt")
 
 round16_points <- round16 %>%
   gather(veikkaaja, veikkaus, 1:ncol(.)) %>%
@@ -60,6 +61,15 @@ round8_points <- round8 %>%
 round8_points_t <- round8_points %>%
   spread(veikkaaja, points) %>%
   filter(veikkaus %in% result_round8) %>%
+  replace(is.na(.), 0)
+
+round4_points <- round4 %>%
+  gather(veikkaaja, veikkaus, 1:ncol(.)) %>%
+  mutate(points = if_else(veikkaus %in% result_round4, 1, 0))
+
+round4_points_t <- round4_points %>%
+  spread(veikkaaja, points) %>%
+  filter(veikkaus %in% result_round4) %>%
   replace(is.na(.), 0)
 
 # Scorers
@@ -98,7 +108,8 @@ veikkaaja_gp <- points_group %>%
 
 veikkaaja_rounds <- bind_rows(
   round16_points %>% mutate(osio = "round16"),
-  round8_points %>% mutate(osio = "round8")
+  round8_points %>% mutate(osio = "round8"),
+  round4_points %>% mutate(osio = "round4")
 ) %>%
   group_by(veikkaaja, osio) %>%
   summarise(points = sum(points, na.rm = TRUE))
@@ -176,7 +187,7 @@ plot_top_scorer <- top_scorer %>%
 
 blues <- c("#5FB9D5", "#7AC6DC", "#8ACDE0", "#A2D9E7", "#B3E2EB", "#DDE8E9")
 reds <- c("#ff4c4c", "#ff7f7f")
-greens <- c("#a4fba6", "#4ae54a") #, "#30cb00", "#0f9200", "#006203")
+greens <- c("#a4fba6", "#4ae54a", "#30cb00") #, "#0f9200", "#006203")
 
 veikkaaja_points <- veikkaaja_points %>%
   mutate(
@@ -185,6 +196,7 @@ veikkaaja_points <- veikkaaja_points %>%
       osio,
       "maalikuningas",
       "maalintekijät",
+      "round4",
       "round8",
       "round16",
       "Group A",
@@ -255,6 +267,10 @@ ui <- navbarPage(
       tags$strong('Pisteet puolivälierät:'),
       fluidRow(column(12,
                       tableOutput('round8_points_t'))),
+      tags$hr(),
+      tags$strong('Pisteet Välierät:'),
+      fluidRow(column(12,
+                      tableOutput('round4_points_t'))),
       
     )
   ),
@@ -340,6 +356,7 @@ server <- function(input, output, session) {
   output$group_points_t <- renderTable(group_points_t, align = "c")
   output$round16_points_t <- renderTable(round16_points_t, align = "c")
   output$round8_points_t <- renderTable(round8_points_t, align = "c")
+  output$round4_points_t <- renderTable(round4_points_t, align = "c")
   output$points_scorers_t <-
     renderTable(points_scorers_t, align = "l")
   output$plot1 <- renderPlot({
