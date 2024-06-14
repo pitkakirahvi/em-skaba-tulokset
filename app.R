@@ -41,13 +41,13 @@ match_details <- match_details %>%
 
 # Group points
 points_group <- matches %>%
-  gather(veikkaaja, veikkaus, 2:ncol(.)) %>%
+  pivot_longer(cols = 2:ncol(.), values_to = "veikkaus", names_to = "veikkaaja") %>%
   right_join(group_results) %>%
   mutate(points = if_else(veikkaus == result, 1, 0))
 
 group_points_t <- points_group %>%
   select(match, points, veikkaaja) %>%
-  spread(veikkaaja, points) %>%
+  pivot_wider(id_cols = match, names_from = veikkaaja, values_from = points) %>%
   left_join(match_details %>% select(match, group), by = "match") %>%
   left_join(group_results, by = "match") %>%
   relocate(group, match, result) %>%
@@ -56,7 +56,7 @@ group_points_t <- points_group %>%
 # Rounds
 
 round16_points <- round16 %>%
-  gather(veikkaaja, veikkaus, 1:ncol(.)) %>%
+  pivot_longer(cols = 2:ncol(.), values_to = "veikkaus", names_to = "veikkaaja") %>%
   mutate(points = if_else(veikkaus %in% result_round16, 1, 0))
 
 round16_points_t <- round16_points %>%
@@ -65,26 +65,26 @@ round16_points_t <- round16_points %>%
   replace(is.na(.), 0)
 
 round8_points <- round8 %>%
-  gather(veikkaaja, veikkaus, 1:ncol(.)) %>%
+  pivot_longer(cols = 2:ncol(.), values_to = "veikkaus", names_to = "veikkaaja") %>%
   mutate(points = if_else(veikkaus %in% result_round8, 1, 0))
 
 round8_points_t <- round8_points %>%
-  spread(veikkaaja, points) %>%
+  pivot_wider(id_cols = veikkaus, names_from = veikkaaja, values_from = points) %>%
   filter(veikkaus %in% result_round8) %>%
   replace(is.na(.), 0)
 
 round4_points <- round4 %>%
-  gather(veikkaaja, veikkaus, 1:ncol(.)) %>%
+  pivot_longer(cols = 2:ncol(.), values_to = "veikkaus", names_to = "veikkaaja") %>%
   mutate(points = if_else(veikkaus %in% result_round4, 1, 0))
 
 round4_points_t <- round4_points %>%
-  spread(veikkaaja, points) %>%
+  pivot_wider(id_cols = veikkaus, names_from = veikkaaja, values_from = points) %>%
   filter(veikkaus %in% result_round4) %>%
   replace(is.na(.), 0)
 
 # Scorers
 points_scorers <- scorers %>%
-  gather(veikkaaja, player) %>%
+  pivot_longer(cols = 1:ncol(.), values_to = "player", names_to = "veikkaaja") %>%
   left_join(scorers_results, by = "player") %>%
   mutate(points = 0.5 * goals) %>%
   select(veikkaaja, player, goals, points)
@@ -105,7 +105,7 @@ top_scorer_results <- scorers_results %>%
   mutate(points = 3)
 
 points_top_scorer <- top_scorer %>%
-  gather(veikkaaja, player) %>%
+  pivot_longer(cols = 1:ncol(.), values_to = "player", names_to = "veikkaaja") %>%
   left_join(top_scorer_results, by = "player") %>%
   replace_na(list(goals = 0, points = 0)) %>%
   select(veikkaaja, player, goals, points)
@@ -114,7 +114,7 @@ points_top_scorer <- top_scorer %>%
 veikkaaja_gp <- points_group %>%
   left_join(match_details %>% select(match, group), by = "match") %>%
   group_by(veikkaaja, group) %>%
-  summarise(points = sum(points)) %>%
+  summarise(points = sum(points, na.rm = TRUE)) %>%
   rename(osio = "group")
 
 veikkaaja_rounds <- bind_rows(
@@ -221,7 +221,7 @@ veikkaaja_points <- veikkaaja_points %>%
 
 veikkaaja_total_points <- veikkaaja_points %>%
   group_by(veikkaaja) %>%
-  summarise(points = sum(points))
+  summarise(points = sum(points, na.rm = TRUE))
 
 p_veikkaajat <- veikkaaja_points %>%
   ggplot(aes(
@@ -246,7 +246,7 @@ p_veikkaajat <- veikkaaja_points %>%
       fill = NULL,
       label = points
     ),
-    nudge_y = 5,
+    nudge_y = 0.1,
     size = 4.5,
     fontface = "bold"
   )
