@@ -2,14 +2,14 @@ library(tidyverse)
 library(here)
 library(jsonlite)
 
-data_files <- list.files(here("answers"),  
-                         pattern = "*.txt")
+data_files <- list.files(here("data"),  pattern = "*.txt")
 
 first_read <- TRUE
 for (file in data_files) {
-  name <- strsplit(file, "_")[[1]][1]
+  name <- str_remove(file, "veikkaus_")
+  name <- str_remove(name, ".txt")
   
-  data <- jsonlite::read_json(file.path(here("answers", file)))
+  data <- jsonlite::read_json(file.path(here("data", file)))
   
   p_matches <- tibble(!!name := data$group_matches) %>%
     unnest(all_of(name)) %>%
@@ -64,14 +64,6 @@ for (file in data_files) {
     scorers <- cbind(scorers, p_scorers)
     top_scorer <- cbind(top_scorer, p_top_scorer)
   }
-  rm(p_matches,
-     p_round16,
-     p_round8,
-     p_round4,
-     p_final,
-     p_winner,
-     p_scorers,
-     p_top_scorer)
 }
 
 save(matches, 
