@@ -19,6 +19,12 @@ group_results <- read_delim("group_results.txt",
                             delim = "\t",
                             locale = locale("fi"))
 
+result_round16 <- read_lines("round16.txt")
+
+result_round8 <- read_lines("round8.txt")
+
+result_round4 <- read_lines("round4.txt")
+
 # Clean data ----
 
 # Matchday
@@ -41,9 +47,6 @@ group_points_t <- points_group %>%
   arrange(group, match)
 
 # Rounds
-result_round16 <- read_lines("round16.txt")
-result_round8 <- read_lines("round8.txt")
-result_round4 <- read_lines("round4.txt")
 
 round16_points <- round16 %>%
   gather(veikkaaja, veikkaus, 1:ncol(.)) %>%
@@ -90,6 +93,7 @@ points_scorers_t <- points_scorers %>%
   arrange(-goals)
 
 top_scorer_results <- scorers_results %>%
+  filter(goals > 0) %>%
   filter(goals == max(goals)) %>%
   mutate(points = 3)
 
