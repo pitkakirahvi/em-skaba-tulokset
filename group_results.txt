@@ -1,37 +1,37 @@
 match	result
-Turkey-Italy	2
-Wales-Switzerland	x
-Turkey-Wales	2
-Italy-Switzerland	1
-Switzerland-Turkey	1
-Italy-Wales	1
-Denmark-Finland	2
-Belgium-Russia	1
-Finland-Russia	2
-Denmark-Belgium	2
-Russia-Denmark	2
-Finland-Belgium	2
-Austria-North Macedonia	1
-Netherlands-Ukraine	1
-Ukraine-North Macedonia	1
-Netherlands-Austria	1
-North Macedonia-Netherlands	2
-Ukraine-Austria	2
-England-Croatia	1
-Scotland-Czech Republic	2
-Croatia-Czech Republic	x
-England-Scotland	x
-Croatia-Scotland	1
-Czech Republic-England	2
-Poland-Slovakia	2
-Spain-Sweden	x
-Sweden-Slovakia	1
-Spain-Poland	x
-Slovakia-Spain	2
-Sweden-Poland	1
-Hungary-Portugal	2
-France-Germany	1
-Hungary-France	x
-Portugal-Germany	2
-Portugal-France	x
-Germany-Hungary	x
+Saksa-Skotlanti	
+Unkari-Sveitsi	
+Saksa-Unkari	
+Skotlanti-Sveitsi	
+Sveitsi-Saksa	
+Skotlanti-Unkari	
+Espanja-Kroatia	
+Italia-Albania	
+Kroatia-Albania	
+Espanja-Italia	
+Albania-Espanja	
+Kroatia-Italia	
+Slovenia-Tanska	
+Serbia-Englanti	
+Slovenia-Serbia	
+Tanska-Englanti	
+Englanti-Slovenia	
+Tanska-Serbia	
+Puola-Hollanti	
+Itävalta-Ranska	
+Puola-Itävalta	
+Hollanti-Ranska	
+Hollanti-Itävalta	
+Ranska-Puola	
+Romania-Ukraina	
+Belgia-Slovakia	
+Slovakia-Ukraina	
+Belgia-Romania	
+Slovakia-Romania	
+Ukraina-Belgia	
+Turkki-Georgia	
+Portugali-Tšekki	
+Georgia-Tšekki	
+Turkki-Portugali	
+Georgia-Portugali	
+Tšekki-Turkki	
