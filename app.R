@@ -1,3 +1,4 @@
+
 library(shiny)
 library(ggplot2)
 library(dplyr)
@@ -109,6 +110,24 @@ points_top_scorer <- top_scorer %>%
   left_join(top_scorer_results, by = "player") %>%
   replace_na(list(goals = 0, points = 0)) %>%
   select(veikkaaja, player, goals, points)
+
+# Matchday ----
+
+today_teams <- match_details %>%
+  filter(date == Sys.Date())
+
+matchday <- points_group %>% 
+  filter(match %in% today_teams$match) %>%
+  group_by(match, veikkaus) %>%
+  summarise(
+    veikkaajat = paste0(veikkaaja, collapse = ", ")
+  ) %>%
+  mutate(veikkaus = factor(veikkaus, levels = c("1", "x", "2"))) %>%
+  arrange(match, veikkaus)
+  
+  
+  
+  
 
 # Veikkaajat
 veikkaaja_gp <- points_group %>%
@@ -232,12 +251,13 @@ p_veikkaajat <- veikkaaja_points %>%
   )) +
   geom_bar(stat = 'identity') +
   scale_fill_manual(values = c(reds, greens, blues)) +
-  #geom_text(stat = 'identity',
-  #          position = position_stack(vjust = .5),
-  #          size = 4) +
   theme_fig +
   labs(x = NULL,
-       title = "Veikkauksen pistetilanne:") +
+       title = "Veikkauksen pistetilanne",
+       fill = NULL,
+       x = "Veikkaaja",
+       y = "Pisteet"
+  ) +
   geom_text(
     data = veikkaaja_total_points,
     aes(
@@ -254,15 +274,25 @@ p_veikkaajat <- veikkaaja_points %>%
 # Shiny ----
 
 ui <- navbarPage(
-  'EM-skaba 2021',
+  'EM-skaba 2024',
   id = 'mainNav',
   tabPanel(
-    'Pisteet',
-    value = 'Pisteet',
+    'Kokonaistilanne',
+    value = 'Kokonaistilanne',
     fluidPage(
       tags$hr(),
       plotOutput("p_veikkaajat"),
       tags$hr(),
+      tags$strong('Päivän ottelut:'),
+      fluidRow(column(12,
+                      tableOutput('matchday'))),
+      tags$hr(),
+    )
+  ),
+  tabPanel(
+    'Pistetaulukot',
+    value = 'Pistetaulukot',
+    fluidPage(
       tags$strong('Pisteet alkulohkon peleistä:'),
       fluidRow(column(12,
                       tableOutput('group_points_t'))),
@@ -324,7 +354,7 @@ ui <- navbarPage(
     )
   ),
   tabPanel(
-    'Yhteenvedot veikkauksista',
+    'Tilastoja veikkauksista',
     value = 'Yhteenveto',
     fluidPage(
       tags$hr(),
