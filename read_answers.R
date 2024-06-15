@@ -85,11 +85,11 @@ for (file in data_files) {
   }
 }
 
-matches %>% write_local("veikkaus_alkulohko.tsv")
-round16 %>% write_local("veikkaus_neljannesvaliera.tsv")
-round8 %>% write_local("veikkaus_puolivaliera.tsv")
-round4 %>% write_local("veikkaus_valiera.tsv")
-final %>% write_local("veikkaus_finaali.tsv")
-winner %>% write_local("veikkaus_voittaja.tsv")
-scorers %>% write_local("veikkaus_maalitekijat.tsv")
-top_scorer %>% write_local("veikkaus_maalikuningas.tsv")
+matches %>% write_local("veikkaukset_alkulohko.tsv")
+round16 %>% write_local("veikkaukset_neljannesvaliera.tsv")
+round8 %>% write_local("veikkaukset_puolivaliera.tsv")
+round4 %>% write_local("veikkaukset_valiera.tsv")
+final %>% write_local("veikkaukset_finaali.tsv")
+winner %>% write_local("veikkaukset_voittaja.tsv")
+scorers %>% write_local("veikkaukset_maalitekijat.tsv")
+top_scorer %>% write_local("veikkaukset_maalikuningas.tsv")
