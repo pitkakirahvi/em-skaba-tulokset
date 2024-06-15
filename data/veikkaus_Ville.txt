@@ -37,7 +37,7 @@
     "Georgia-Portugali:2",
     "Tšekki-Turkki:x"
   ],
-  "round16": ["Saksa", "Sveitsi", "Espanja", "Italia", "Tanska", "Englanti", "Ranska", "Hollanti", "Belgia", "Romania", "Portugali", "Tšekki", "Itävalta", "Serbia", "", ""],
+  "round16": ["Saksa", "Sveitsi", "Espanja", "Italia", "Tanska", "Englanti", "Ranska", "Hollanti", "Belgia", "Romania", "Portugali", "Tšekki", "Itävalta", "Serbia"],
   "round8": ["Saksa", "Italia", "Ranska", "Espanja", "Hollanti", "Portugali", "Belgia", "Itävalta"],
   "round4": ["Englanti", "Ranska", "Espanja", "Belgia"],
   "final": ["Ranska", "Englanti"],

@@ -8,6 +8,7 @@ library(stringr)
 library(forcats)
 library(here)
 library(jsonlite)
+source("helpers.R")
 
 data_files <- list.files(here("data"),  pattern = "*.txt")
 
@@ -84,11 +85,11 @@ for (file in data_files) {
   }
 }
 
-matches %>% write_delim("veikkaus_alkulohko.tsv")
-round16 %>% write_delim("veikkaus_neljannesvaliera.tsv")
-round8 %>% write_delim("veikkaus_puolivaliera.tsv")
-round4 %>% write_delim("veikkaus_valiera.tsv")
-final %>% write_delim("veikkaus_finaali.tsv")
-winner %>% write_delim("veikkaus_voittaja.tsv")
-scorers %>% write_delim("veikkaus_maalitekijat.tsv")
-top_scorer %>% write_delim("veikkaus_maalikuningas.tsv")
+matches %>% write_local("veikkaus_alkulohko.tsv")
+round16 %>% write_local("veikkaus_neljannesvaliera.tsv")
+round8 %>% write_local("veikkaus_puolivaliera.tsv")
+round4 %>% write_local("veikkaus_valiera.tsv")
+final %>% write_local("veikkaus_finaali.tsv")
+winner %>% write_local("veikkaus_voittaja.tsv")
+scorers %>% write_local("veikkaus_maalitekijat.tsv")
+top_scorer %>% write_local("veikkaus_maalikuningas.tsv")
