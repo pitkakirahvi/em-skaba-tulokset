@@ -1,5 +1,5 @@
 match	result
-Saksa-Skotlanti	
+Saksa-Skotlanti	1
 Unkari-Sveitsi	
 Saksa-Unkari	
 Skotlanti-Sveitsi	

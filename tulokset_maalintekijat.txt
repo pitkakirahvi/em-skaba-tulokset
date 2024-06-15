@@ -1,0 +1,15 @@
+team	player	goals
+Portugali	Cristiano Ronaldo	0
+Ukraina	Artem Dovbyk	0
+Ransla	Kylian Mbappé	0
+Englanti	Harry Kane	0
+Nigeria	Nwankwo Kanu	0
+Belgia	Romelu Lukaku	0
+Espanja	Álvaro Morata	0
+Englanti	Jude Bellingham	0
+Ranska	Olivier Giroud	0
+Saksa	Kai Havertz	1
+Slovenia	Benjamin Šeško	0
+Tanska	Rasmus Højlund	0
+Puola	Robert Lewandowski	0
+Saksa	Niclas Füllkrug	1
