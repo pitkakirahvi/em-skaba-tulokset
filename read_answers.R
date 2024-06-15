@@ -13,41 +13,52 @@ data_files <- list.files(here("data"),  pattern = "*.txt")
 
 first_read <- TRUE
 for (file in data_files) {
-  name <- str_remove(file, "veikkaus_")
-  name <- str_remove(name, ".txt")
+  respondent <- str_remove(file, "veikkaus_")
+  respondent <- str_remove(respondent, ".txt")
   
   data <- jsonlite::read_json(file.path(here("data", file)))
   
-  p_matches <- tibble(!!name := data$group_matches) %>%
-    unnest(all_of(name)) %>%
-    separate(all_of(name), into = c("match", name), sep = ":")
+  p_matches <- tibble(
+    respondent = respondent, 
+    data = unlist(data$group_matches)
+  ) %>% 
+    separate(data, into = c("match", "guess"), sep = ":")
+    
   
-  p_round16 <- tibble(!!name := data$round16) %>%
-    unnest(all_of(name)) %>% 
-    arrange(!!!syms(name))
+  p_round16 <- tibble(
+    respondent = respondent, 
+    guess = unlist(data$round16)
+  )
   
-  p_round8 <- tibble(!!name := data$round8) %>%
-    unnest(all_of(name)) %>% 
-    arrange(!!!syms(name))
+  p_round8 <- tibble(
+    respondent = respondent, 
+    guess = unlist(data$round8)
+  )
   
-  p_round4 <- tibble(!!name := data$round4) %>%
-    unnest(all_of(name)) %>% 
-    arrange(!!!syms(name))
+  p_round4 <- tibble(
+    respondent = respondent, 
+    guess = unlist(data$round4)
+  )
   
-  p_final <- tibble(!!name := data$final) %>%
-    unnest(all_of(name)) %>% 
-    arrange(!!!syms(name))
+  p_final <- tibble(
+    respondent = respondent, 
+    guess = unlist(data$final)
+  )
   
-  p_winner <- tibble(!!name := data$winner) %>%
-    unnest(all_of(name))
+  p_winner <- tibble(
+    respondent = respondent, 
+    guess = unlist(data$winner)
+  )
   
-  p_scorers <- tibble(!!name := data$scorers) %>%
-    unnest(all_of(name))
+  p_scorers <- tibble(
+    respondent = respondent, 
+    guess = unlist(data$scorers)
+  )
   
-  p_top_scorer <- tibble(!!name := data$top_scorer) %>%
-    unnest(all_of(name))
-  
-  rm(data)
+  p_top_scorer <- tibble(
+    respondent = respondent, 
+    guess = unlist(data$top_scorer)
+  )
   
   if (first_read) {
     matches <- p_matches
@@ -62,24 +73,22 @@ for (file in data_files) {
     first_read <- FALSE
     
   } else {
-    matches <- cbind(matches, p_matches[, name])
-    round16 <- cbind(round16, p_round16)
-    round8 <- cbind(round8, p_round8)
-    round4 <- cbind(round4, p_round4)
-    final <- cbind(final, p_final)
-    winner <- cbind(winner, p_winner)
-    scorers <- cbind(scorers, p_scorers)
-    top_scorer <- cbind(top_scorer, p_top_scorer)
+    matches <- bind_rows(matches, p_matches)
+    round16 <- bind_rows(round16, p_round16)
+    round8 <- bind_rows(round8, p_round8)
+    round4 <- bind_rows(round4, p_round4)
+    final <- bind_rows(final, p_final)
+    winner <- bind_rows(winner, p_winner)
+    scorers <- bind_rows(scorers, p_scorers)
+    top_scorer <- bind_rows(top_scorer, p_top_scorer)
   }
 }
 
-save(matches, 
-     round16,
-     round8, 
-     round4,
-     final,
-     winner,
-     scorers,
-     top_scorer,
-     file = "rows.Rdata"
-     )
+matches %>% write_delim("veikkaus_alkulohko.tsv")
+round16 %>% write_delim("veikkaus_neljannesvaliera.tsv")
+round8 %>% write_delim("veikkaus_puolivaliera.tsv")
+round4 %>% write_delim("veikkaus_valiera.tsv")
+final %>% write_delim("veikkaus_finaali.tsv")
+winner %>% write_delim("veikkaus_voittaja.tsv")
+scorers %>% write_delim("veikkaus_maalitekijat.tsv")
+top_scorer %>% write_delim("veikkaus_maalikuningas.tsv")
