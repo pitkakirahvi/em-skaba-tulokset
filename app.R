@@ -20,6 +20,8 @@ results_group <- read_remote("tulokset_alkulohko.tsv")
 result_round16 <- read_remote("tulokset_neljannesvaliera.tsv")
 result_round8 <- read_remote("tulokset_puolivaliera.tsv")
 result_round4 <- read_remote("tulokset_valiera.tsv")
+result_final <- read_remote("tulokset_finaali.tsv")
+result_winner <- read_remote("tulokset_mestari.tsv")
 
 guesses_scorers <- read_remote("veikkaukset_maalitekijat.tsv")
 guesses_top_scorer <- read_remote("veikkaukset_maalikuningas.tsv")
@@ -80,6 +82,24 @@ round4_points_wide <- round4_points %>%
   replace(is.na(.), 0) %>%
   rename(Veikkaus = guess)
 
+final_points <- guesses_final %>%
+  mutate(points = if_else(guess %in% result_final, 1, 0))
+
+final_points_wide <- final_points %>%
+  pivot_wider(id_cols = guess, names_from = respondent, values_from = points) %>%
+  filter(guess %in% result_final) %>%
+  replace(is.na(.), 0) %>%
+  rename(Veikkaus = guess)
+
+winner_points <- guesses_winner %>%
+  mutate(points = if_else(guess %in% result_winner, 1, 0))
+
+winner_points_wide <- winner_points %>%
+  pivot_wider(id_cols = guess, names_from = respondent, values_from = points) %>%
+  filter(guess %in% result_winner) %>%
+  replace(is.na(.), 0) %>%
+  rename(Veikkaus = guess)
+
 # Scorers ----
 
 points_scorers <- guesses_scorers %>%
@@ -99,7 +119,7 @@ points_scorers_wide <- points_scorers %>%
   rename(Veikkaus = guess, Maalit = goals, Pisteet = points)
 
 results_top_scorer <- results_scorers %>%
-  filter(goals > 0) %>%
+  filter(goals > 3) %>%
   filter(goals == max(goals)) %>%
   mutate(points = 3)
 
@@ -148,7 +168,9 @@ respondent_points_rounds <-
   bind_rows(
     round16_points %>% mutate(osio = "neljännesvälierät"),
     round8_points %>% mutate(osio = "puolivälierät"),
-    round4_points %>% mutate(osio = "välierät")
+    round4_points %>% mutate(osio = "välierät"),
+    final_points %>% mutate(osio = "finaali"),
+    winner_points %>% mutate(osio = "mestari")
   ) %>%
   group_by(respondent, osio) %>%
   summarise(points = sum(points, na.rm = TRUE))
@@ -258,7 +280,7 @@ plot_top_scorer <- guesses_top_scorer %>%
 
 blues <- c("#5FB9D5", "#7AC6DC", "#8ACDE0", "#A2D9E7", "#B3E2EB", "#DDE8E9")
 reds <- c("#ff4c4c", "#ff7f7f")
-greens <- c("#a4fba6", "#4ae54a", "#30cb00") #, "#0f9200", "#006203")
+greens <- c("#a4fba6", "#4ae54a", "#30cb00", "#0f9200", "#006203")
 
 respondent_points_summary <- respondent_points_summary %>%
   mutate(
@@ -270,6 +292,8 @@ respondent_points_summary <- respondent_points_summary %>%
       "välierät",
       "puolivälierät",
       "neljännesvälierät",
+      "finaali",
+      "mestari",
       "Lohko A",
       "Lohko B",
       "Lohko C",
@@ -343,6 +367,12 @@ ui <- navbarPage(
       tags$strong('Pisteet välierät'),
       fluidRow(column(12,
                       tableOutput('round4_points_wide'))),
+      tags$strong('Pisteet finaali'),
+      fluidRow(column(12,
+                      tableOutput('final_points_wide'))),
+      tags$strong('Pisteet mestari'),
+      fluidRow(column(12,
+                      tableOutput('winner_points_wide'))),
       
     )
   ),
@@ -430,6 +460,8 @@ server <- function(input, output, session) {
   output$round16_points_wide <- renderTable(round16_points_wide, align = "c")
   output$round8_points_wide <- renderTable(round8_points_wide, align = "c")
   output$round4_points_wide <- renderTable(round4_points_wide, align = "c")
+  output$final_points_wide <- renderTable(final_points_wide, align = "c")
+  output$winner_points_wide <- renderTable(winner_points_wide, align = "c")
   output$points_scorers_wide <- renderTable(points_scorers_wide, align = "l")
   output$plot1 <- renderPlot({
     plot_to16
