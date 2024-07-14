@@ -119,7 +119,7 @@ points_scorers_wide <- points_scorers %>%
   rename(Veikkaus = guess, Maalit = goals, Pisteet = points)
 
 results_top_scorer <- results_scorers %>%
-  filter(goals > 3) %>%
+  filter(goals > 1) %>%
   filter(goals == max(goals)) %>%
   mutate(points = 3)
 
