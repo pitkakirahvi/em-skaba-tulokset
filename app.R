@@ -56,47 +56,47 @@ group_points_wide <- points_group %>%
 # Rounds ----
 
 round16_points <- guesses_round16 %>%
-  mutate(points = if_else(guess %in% result_round16, 1, 0))
+  mutate(points = if_else(guess %in% result_round16$team, 1, 0))
 
 round16_points_wide <- round16_points %>%
   pivot_wider(id_cols = guess, names_from = respondent, values_from = points) %>%
-  filter(guess %in% result_round16) %>%
+  filter(guess %in% result_round16$team) %>%
   replace(is.na(.), 0) %>%
   rename(Veikkaus = guess)
 
 round8_points <- guesses_round8 %>%
-  mutate(points = if_else(guess %in% result_round8, 1, 0))
+  mutate(points = if_else(guess %in% result_round8$team, 1, 0))
 
 round8_points_wide <- round8_points %>%
   pivot_wider(id_cols = guess, names_from = respondent, values_from = points) %>%
-  filter(guess %in% result_round8) %>%
+  filter(guess %in% result_round8$team) %>%
   replace(is.na(.), 0) %>%
   rename(Veikkaus = guess)
 
 round4_points <- guesses_round4 %>%
-  mutate(points = if_else(guess %in% result_round4, 1, 0))
+  mutate(points = if_else(guess %in% result_round4$team, 1, 0))
 
 round4_points_wide <- round4_points %>%
   pivot_wider(id_cols = guess, names_from = respondent, values_from = points) %>%
-  filter(guess %in% result_round4) %>%
+  filter(guess %in% result_round4$team) %>%
   replace(is.na(.), 0) %>%
   rename(Veikkaus = guess)
 
 final_points <- guesses_final %>%
-  mutate(points = if_else(guess %in% result_final, 1, 0))
+  mutate(points = if_else(guess %in% result_final$team, 1, 0))
 
 final_points_wide <- final_points %>%
   pivot_wider(id_cols = guess, names_from = respondent, values_from = points) %>%
-  filter(guess %in% result_final) %>%
+  filter(guess %in% result_final$team) %>%
   replace(is.na(.), 0) %>%
   rename(Veikkaus = guess)
 
 winner_points <- guesses_winner %>%
-  mutate(points = if_else(guess %in% result_winner, 1, 0))
+  mutate(points = if_else(guess %in% result_winner$team, 1, 0))
 
 winner_points_wide <- winner_points %>%
   pivot_wider(id_cols = guess, names_from = respondent, values_from = points) %>%
-  filter(guess %in% result_winner) %>%
+  filter(guess %in% result_winner$team) %>%
   replace(is.na(.), 0) %>%
   rename(Veikkaus = guess)
 
